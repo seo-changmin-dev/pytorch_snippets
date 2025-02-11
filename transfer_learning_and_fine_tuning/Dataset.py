@@ -78,7 +78,7 @@ class BuildHymenopteraDataLoader():
         return dataloader_dict
         
 def get_data_path_list(data_dir:str):
-    data_dir = './data/hymenoptera_data'
+    data_dir = os.path.join(data_dir, 'hymenoptera_data')
     train_dir = os.path.join(data_dir, 'train')
     val_dir = os.path.join(data_dir, 'val')
 
@@ -94,9 +94,3 @@ def get_data_path_list(data_dir:str):
     }
 
     return data_path_list_dict
-
-if __name__ == "__main__":
-    data_dir = './data'
-    data_path_list_dict = get_data_path_list(data_dir)
-
-    print(data_path_list_dict['train'].__len__(), data_path_list_dict['val'].__len__())
