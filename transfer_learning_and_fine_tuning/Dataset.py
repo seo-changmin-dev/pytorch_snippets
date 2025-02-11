@@ -9,16 +9,22 @@ import torch.nn as nn
 from torchvision import transforms
 
 class HymenopteraDataSet(torch.utils.data.Dataset):
-    def __init__(self, file_list:List[str], phase:str, transform:transforms):
+    '''
+    phase: [train, val]
+    '''
+    def __init__(self, data_path_list_dict:dict, phase:str, transform:transforms):
         super(HymenopteraDataSet, self).__init__()
-        self.file_list = file_list
+        self.data_path_list = data_path_list_dict
         self.phase = phase
         self.transform = transform
 
     def __len__(self):
-        pass
+        return len(self.data_path_list[self.phase])
 
     def __getitem__(self, idx):
+        # data
+        
+        # label
         pass
 
 def get_data_path_list(data_dir:str):
@@ -26,21 +32,21 @@ def get_data_path_list(data_dir:str):
     train_dir = os.path.join(data_dir, 'train')
     val_dir = os.path.join(data_dir, 'val')
 
-    glob_regex = f"{train_dir}/**/*"
-    train_file_list = glob(glob_regex, recursive=True)
+    glob_regex = f"{train_dir}/**/*.jpg"
+    train_data_path_list = glob(glob_regex, recursive=True)
 
-    glob_regex = f"{val_dir}/**/*"
-    val_file_list = glob(glob_regex, recursive=True)
+    glob_regex = f"{val_dir}/**/*.jpg"
+    val_data_path_list = glob(glob_regex, recursive=True)
 
-    file_list_dict = {
-        'train': train_file_list,
-        'val': val_file_list
+    data_path_list_dict = {
+        'train': train_data_path_list,
+        'val': val_data_path_list
     }
 
-    return file_list_dict
+    return data_path_list_dict
 
 if __name__ == "__main__":
     data_dir = './data'
-    file_list_dict = get_data_path_list(data_dir)
+    data_path_list_dict = get_data_path_list(data_dir)
 
-    print(file_list_dict['train'].__len__(), file_list_dict['val'].__len__())
+    print(data_path_list_dict['train'].__len__(), data_path_list_dict['val'].__len__())
