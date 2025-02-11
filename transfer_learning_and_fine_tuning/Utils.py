@@ -1,5 +1,6 @@
 import os
 import urllib.request
+import json
 from zipfile import ZipFile
 
 def download_data_and_class_json(data_dir:str):
@@ -27,5 +28,14 @@ def download_data_and_class_json(data_dir:str):
 
     print("Done")
     
+class ClassIndexLookUp():
+    def __init__(self, data_dir:str) -> str:
+        json_path = os.path.join(data_dir, 'imagenet_class_index.json')
+        with open(json_path, 'r') as f:
+            self.class_name_list = json.load(f)
+
+    def __call__(self, idx:int):
+        return self.class_name_list[str(idx)][1]
+
 if __name__ == "__main__":
     download_data_and_class_json(data_dir='./data')
