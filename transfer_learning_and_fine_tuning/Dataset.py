@@ -39,9 +39,9 @@ class HymenopteraDataSet(torch.utils.data.Dataset):
         # label
         label_name = data_path.split('/')[-2]
         if label_name == "ants":
-            label_data = 0
+            label_data = 0.0
         elif label_name == "bees":
-            label_data = 1
+            label_data = 1.0
 
         return image_data, label_data
 
