@@ -7,6 +7,9 @@ from PIL import Image
 
 import torch
 import torch.nn as nn
+import torch.utils
+import torch.utils.data
+import torch.utils.data.dataloader
 from torchvision import transforms
 
 class HymenopteraDataSet(torch.utils.data.Dataset):
@@ -42,6 +45,38 @@ class HymenopteraDataSet(torch.utils.data.Dataset):
 
         return image_data, label_data
 
+class BuildHymenopteraDataLoader():
+    def __init__(self, data_dir:str, transform_dict:dict, batch_size:int):
+        self.data_path_list_dict = get_data_path_list(data_dir)
+        self.transform_dict = transform_dict
+        self.batch_size = batch_size
+
+    def get_dataloader(self):
+        train_dataset = HymenopteraDataSet(self.data_path_list_dict, 'train', self.transform_dict['train'])
+        val_dataset = HymenopteraDataSet(self.data_path_list_dict, 'val', self.transform_dict['val'])
+
+        split_indices = np.arange(len(val_dataset))
+        np.random.shuffle(split_indices)
+
+        split_separator = len(split_indices) // 2
+        val_indices = split_indices[:split_separator]
+        test_indices = split_indices[split_separator+1:]
+
+        test_dataset = torch.utils.data.Subset(val_dataset, test_indices) 
+        val_dataset = torch.utils.data.Subset(val_dataset, val_indices)
+
+        train_dataloader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=self.batch_size, shuffle=True)
+        val_dataloader = torch.utils.data.DataLoader(dataset=val_dataset, batch_size=self.batch_size, shuffle=False)
+        test_dataloader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=self.batch_size, shuffle=False)
+
+        dataloader_dict = {
+            'train': train_dataloader,
+            'val': val_dataloader,
+            'test': test_dataloader
+        }
+
+        return dataloader_dict
+        
 def get_data_path_list(data_dir:str):
     data_dir = './data/hymenoptera_data'
     train_dir = os.path.join(data_dir, 'train')
