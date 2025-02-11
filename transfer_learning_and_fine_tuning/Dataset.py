@@ -3,6 +3,7 @@ from glob import glob
 from typing import List
 
 import numpy as np
+from PIL import Image
 
 import torch
 import torch.nn as nn
@@ -10,7 +11,11 @@ from torchvision import transforms
 
 class HymenopteraDataSet(torch.utils.data.Dataset):
     '''
+    [Input]
     phase: [train, val]
+
+    [Output]
+    label_data: [0, 1] # ants: 0 | bees: 1
     '''
     def __init__(self, data_path_list_dict:dict, phase:str, transform:transforms):
         super(HymenopteraDataSet, self).__init__()
@@ -22,10 +27,20 @@ class HymenopteraDataSet(torch.utils.data.Dataset):
         return len(self.data_path_list[self.phase])
 
     def __getitem__(self, idx):
+        data_path = self.data_path_list[self.phase][idx]
+
         # data
-        
+        image_data = Image.open(data_path)
+        image_data = self.transform(image_data)
+
         # label
-        pass
+        label_name = data_path.split('/')[-2]
+        if label_name == "ants":
+            label_data = 0
+        elif label_name == "bees":
+            label_data = 1
+
+        return image_data, label_data
 
 def get_data_path_list(data_dir:str):
     data_dir = './data/hymenoptera_data'
