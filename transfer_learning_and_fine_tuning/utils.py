@@ -30,12 +30,12 @@ def download_data_and_class_json(data_dir:str):
     
 class ClassIndexLookUp():
     def __init__(self, data_dir:str) -> str:
-        json_path = os.path.join(data_dir, 'imagenet_class_index.json')
+        json_path = os.path.join(data_dir, 'imagenet_data', 'imagenet_class_index.json')
         with open(json_path, 'r') as f:
             self.class_name_list = json.load(f)
 
-    def __call__(self, idx:int):
-        return self.class_name_list[str(idx)][1]
+    def __call__(self, idx):
+        return self.class_name_list[str(int(idx))][1]
 
 if __name__ == "__main__":
     download_data_and_class_json(data_dir='./data')

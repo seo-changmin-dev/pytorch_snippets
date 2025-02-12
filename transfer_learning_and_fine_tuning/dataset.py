@@ -45,13 +45,13 @@ class HymenopteraDataSet(torch.utils.data.Dataset):
 
         return image_data, label_data
 
-class BuildHymenopteraDataLoader():
+class HymenopteraDataBuilder():
     def __init__(self, data_dir:str, transform_dict:dict, batch_size:int):
         self.data_path_list_dict = get_data_path_list(data_dir)
         self.transform_dict = transform_dict
         self.batch_size = batch_size
-
-    def get_dataloader(self):
+    
+    def get_dataset(self):
         train_dataset = HymenopteraDataSet(self.data_path_list_dict, 'train', self.transform_dict['train'])
         val_dataset = HymenopteraDataSet(self.data_path_list_dict, 'val', self.transform_dict['val'])
 
@@ -65,9 +65,20 @@ class BuildHymenopteraDataLoader():
         test_dataset = torch.utils.data.Subset(val_dataset, test_indices) 
         val_dataset = torch.utils.data.Subset(val_dataset, val_indices)
 
-        train_dataloader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=self.batch_size, shuffle=True)
-        val_dataloader = torch.utils.data.DataLoader(dataset=val_dataset, batch_size=self.batch_size, shuffle=False)
-        test_dataloader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=self.batch_size, shuffle=False)
+        dataset_dict = {
+            'train': train_dataset,
+            'val': val_dataset,
+            'test': test_dataset
+        }
+
+        return dataset_dict
+    
+    def get_dataloader(self):
+        dataset_dict = self.get_dataset()
+
+        train_dataloader = torch.utils.data.DataLoader(dataset=dataset_dict['train'], batch_size=self.batch_size, shuffle=True)
+        val_dataloader = torch.utils.data.DataLoader(dataset=dataset_dict['val'], batch_size=self.batch_size, shuffle=False)
+        test_dataloader = torch.utils.data.DataLoader(dataset=dataset_dict['test'], batch_size=self.batch_size, shuffle=False)
 
         dataloader_dict = {
             'train': train_dataloader,
@@ -76,7 +87,23 @@ class BuildHymenopteraDataLoader():
         }
 
         return dataloader_dict
-        
+
+class ImageTransformBuilder():
+    def __init__(self, resize, mean, std):
+        self.transform = {
+            'train': transforms.Compose([transforms.Resize(resize),
+                                 transforms.ToTensor(),
+                                 transforms.Normalize(mean, std)
+            ]),
+            'val': transforms.Compose([transforms.Resize(resize),
+                                 transforms.ToTensor(),
+                                 transforms.Normalize(mean, std)
+            ]),
+        }
+
+    def __call__(self, phase:str):
+        return self.transform[phase]
+
 def get_data_path_list(data_dir:str):
     data_dir = os.path.join(data_dir, 'hymenoptera_data')
     train_dir = os.path.join(data_dir, 'train')
