@@ -1,9 +1,9 @@
+import os
 import random
 import numpy as np
 
 import torch
 import torch.nn as nn
-from torchvision import transforms
 
 from dataset import HymenopteraDataBuilder, ImageTransformBuilder
 from models import AntBeeClassifier
@@ -136,3 +136,10 @@ if __name__ == "__main__":
 
     epoch_log.append([epoch, phase, f"{running_loss:.6f}", f"{running_acc:.4f}"])
     print(tabulate(epoch_log, headers=["Epoch", "Phase", "Loss", "Accuracy"], tablefmt="rst"))
+
+    checkpoint_path = './results/checkpoints'
+    save_path = os.path.join(checkpoint_path, f"{epoch}.pth")
+
+    print(f"Model is saved in {save_path}")
+    torch.save(model, save_path)
+    

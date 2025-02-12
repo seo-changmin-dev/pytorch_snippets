@@ -2,3 +2,4 @@ data/
 notebooks_test/data
 
 *.pyc
+*.pth
