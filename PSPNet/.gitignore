@@ -1,0 +1,5 @@
+data/VOCdevkit/*
+data/VOCtrainval_11-May-2012.tar
+
+weights/pspnet50_ADE20K.pth
+weights/pspnet50_30.pth
